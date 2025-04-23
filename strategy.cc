@@ -169,35 +169,53 @@ void Strategy::gloutonMove() {
 }
 
 Sint32 Strategy::minMaxMove(int niveau, int i) {
+    // Cas de base : niveau maximum atteint
     if (niveau == NIVMAX) {
         return Strategy::estimateCurrentScore();
     }
+
     std::vector<movement> valid_moves;
     Strategy::computeValidMoves(valid_moves);
+
+    // Aucun mouvement valide
     if (valid_moves.empty()) {
         return Strategy::estimateCurrentScore();
     }
-    int originalPlayer = _current_player;
+
     Sint32 eval = (i == 1) ? INT32_MIN : INT32_MAX;
-    movement bestMove = valid_moves[0];
+    movement bestMove = valid_moves[0]; // Valeur par défaut
+    int originalPlayer = _current_player;
+
     for (const movement& mov : valid_moves) {
+        // Sauvegarde de l'état courant
         bidiarray<Sint16> currentState = _blobs;
+
         Strategy::applyMove(mov);
-        _current_player = 1 - _current_player;
+
+        // Changement de joueur pour le coup suivant
+        _current_player = 1 - originalPlayer;
+
         Sint32 score = Strategy::minMaxMove(niveau + 1, -i);
+
+        // Restauration
         _current_player = originalPlayer;
-        _blobs = currentState; // Restauration de l'état
+        _blobs = currentState;
+
+        // Mise à jour du meilleur score
         if (i * score > i * eval) {
             eval = score;
             bestMove = mov;
         }
     }
+
+    // Sauvegarde du meilleur coup si on est à la racine
     if (niveau == 0) {
         _saveBestMove(bestMove);
     }
 
     return eval;
 }
+
 
 
 Sint32 Strategy::minMaxParaMove(int niveau, int i) {

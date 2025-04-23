@@ -351,7 +351,7 @@ Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
                 Strategy localStrat = *this;
                 
                 this->applyMove(mov);
-                this->alphaBetaMove(niveau+1, a, b);
+                this->alphaBetaMove(niveau+1, 1,a, b);
                 eval = this->estimateCurrentScore();
 
                 #pragma omp critical 
@@ -377,7 +377,7 @@ Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
             // Strategy temp = *this;
             applyMove(mov);
             
-            alphaBetaMove(niveau+1, a, b);
+            alphaBetaMove(niveau+1, 1 ,a, b);
             
             eval = estimateCurrentScore();
 
@@ -404,7 +404,7 @@ Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
             applyMove(mov);
             
             movement childMove;
-            alphaBetaMove(niveau + 1, a, b);
+            alphaBetaMove(niveau + 1, 1,a, b);
             
             eval = estimateCurrentScore();
             if (eval < minEval) {
@@ -556,7 +556,7 @@ void Strategy::classicMove() {
 
     if (availableMov.empty()) {
         //Strategy::gloutonMove(); // Au pire Glouton
-	Strategy::alphaBetaMove(0, INT32_MIN, INT32_MAX);
+	Strategy::alphaBetaMove(0, 1, INT32_MIN, INT32_MAX);
         return;
     }
 
@@ -598,7 +598,7 @@ void Strategy::strategyMove(int choice) {
     } else if (choice == 4) {
         // Stratégie alpha-beta
 		printf("alphaBetaMove choice : ");
-        Strategy::alphaBetaMove(0, INT32_MIN, INT32_MAX);
+        Strategy::alphaBetaMove(0, 1, INT32_MIN, INT32_MAX);
     } else if (choice == 5) {
 		printf("alphaBetaParaMove choice : ");
         Strategy::alphaBetaParaMove(0, INT32_MIN, INT32_MAX);

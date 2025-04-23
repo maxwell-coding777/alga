@@ -1,7 +1,7 @@
 #include "strategy.h"
 
 // Profondeur de recherche pour minMax / alphaBeta
-const int NIVMAX = 6;
+const int NIVMAX = 3;
 int stratChoice = 0;
 int stratChoice2 = 0;
 bool twoDiffIA = false;

@@ -8,9 +8,20 @@ def plot_evaluation(csv_file):
     player2_x = []
     player1_y = []
     player2_y = []
+    player1_algo = "Player 1 (Blue)"
+    player2_algo = "Player 2 (Red)"
 
     with open(csv_file, "r") as file:
         reader = csv.reader(file)
+        header = next(reader, None)  # Read the first line (header)
+        if header and "Player 1" in header[0] and "Player 2" in header[0]:
+            # Extract algorithm names from the header
+            player1_algo = header[0].split(":")[1].split(",")[0].strip()
+            player2_algo = header[0].split(":")[2].strip()
+
+        # Skip the second line (column names)
+        next(reader, None)
+
         for i, row in enumerate(reader):
             if row:  # Ensure the row is not empty
                 move_numbers.append(i + 1)
@@ -21,9 +32,10 @@ def plot_evaluation(csv_file):
                 else:  # Player 2's turn
                     player2_x.append(i)
                     player2_y.append(evaluation)
+
     plt.figure(figsize=(10, 6))
-    plt.plot(player1_x, player1_y, "b-", label="Player 1 (Blue)")
-    plt.plot(player2_x, player2_y, "r-", label="Player 2 (Red)")
+    plt.plot(player1_x, player1_y, "b-", label=f"Player 1 (Blue): {player1_algo}")
+    plt.plot(player2_x, player2_y, "r-", label=f"Player 2 (Red): {player2_algo}")
     plt.xlabel("Move Number")
     plt.ylabel("Evaluation")
     plt.title("Game Evaluation Over Moves")

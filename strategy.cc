@@ -148,7 +148,6 @@ void Strategy::naiveMove() {
     
     end_choice:
         _saveBestMove(mv);
-        logToCSV("naiveMove", estimateCurrentScore());
         return;
 }
 
@@ -173,14 +172,12 @@ void Strategy::gloutonMove() {
     }
     
     _saveBestMove(bestMove);
-    logToCSV("gloutonMove", eval);
     return;
 }
 
 Sint32 Strategy::minMaxMove(int niveau, int i) {
     if (niveau == NIVMAX) {
         Sint32 score = Strategy::estimateCurrentScore() * i;
-        if (niveau == 0) logToCSV("minMaxMove", score);
         return score;
     }
     std::vector<movement> valid_moves;
@@ -204,7 +201,6 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
     }
     if (niveau == 0) {
         _saveBestMove(bestMove);
-        logToCSV("minMaxMove", eval);
     }
     return eval;
 }
@@ -291,7 +287,6 @@ Sint32 Strategy::minMaxParaMove(int niveau, int i) {
 Sint32 Strategy::alphaBetaMove(int niveau, int i, Sint32 alpha, Sint32 beta) {
     if (niveau == NIVMAX) {
         Sint32 score = Strategy::estimateCurrentScore() * i;
-        if (niveau == 0) logToCSV("alphaBetaMove", score);
         return score;
     }
     std::vector<movement> valid_moves;
@@ -323,7 +318,6 @@ Sint32 Strategy::alphaBetaMove(int niveau, int i, Sint32 alpha, Sint32 beta) {
     }
     if (niveau == 0) {
         _saveBestMove(bestMove);
-        logToCSV("alphaBetaMove", eval);
     }
     return eval;
 }
@@ -365,7 +359,6 @@ Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
                 }
             }
         }
-        logToCSV("alphaBetaParaMove", eval);
     }
     // Noeud max
     else if (niveau % 2 == 0) {

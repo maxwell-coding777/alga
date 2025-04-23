@@ -4,8 +4,10 @@ import csv
 
 def plot_evaluation(csv_file):
     move_numbers = []
-    evaluations_player1 = []
-    evaluations_player2 = []
+    player1_x = []
+    player2_x = []
+    player1_y = []
+    player2_y = []
 
     with open(csv_file, "r") as file:
         reader = csv.reader(file)
@@ -14,20 +16,18 @@ def plot_evaluation(csv_file):
                 move_numbers.append(i + 1)
                 evaluation = int(row[0])
                 if i % 2 == 0:  # Player 1's turn
-                    evaluations_player1.append(evaluation)
-                    evaluations_player2.append(None)  # No value for Player 2
+                    player1_x.append(i)
+                    player1_y.append(evaluation)
                 else:  # Player 2's turn
-                    evaluations_player2.append(evaluation)
-                    evaluations_player1.append(None)  # No value for Player 1
-
+                    player2_x.append(i)
+                    player2_y.append(evaluation)
     plt.figure(figsize=(10, 6))
-    plt.plot(move_numbers, evaluations_player1, "b-", label="Player 1 (Blue)")
-    plt.plot(move_numbers, evaluations_player2, "r-", label="Player 2 (Red)")
+    plt.plot(player1_x, player1_y, "b-", label="Player 1 (Blue)")
+    plt.plot(player2_x, player2_y, "r-", label="Player 2 (Red)")
     plt.xlabel("Move Number")
     plt.ylabel("Evaluation")
     plt.title("Game Evaluation Over Moves")
     plt.legend()
-    plt.grid(True)
     plt.show()
 
 

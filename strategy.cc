@@ -632,7 +632,8 @@ void Strategy::strategyMove(int choice) {
         // Stratégie min-max
 		printf("minMaxMove choice : ");
         int evalMax = Strategy::minMaxMove(0, 1);
-        printf("evalMax : %d\n", evalMax);
+        printf("\nevalMax : %d\n for the next %d rounds, currentEval: %d\n", evalMax, NIVMAX, 
+               Strategy::estimateCurrentScore());
     } else if (choice == 3) {
         // Stratégie min-max parallel
 		printf("minMaxParaMove choice : ");

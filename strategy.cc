@@ -122,6 +122,10 @@ vector<movement>& Strategy::computeValidMoves(vector<movement>& valid_moves) con
 
 void Strategy::logToCSV(const std::string& method_name, Sint32 evaluation) {
     std::ofstream file(method_name + ".csv", std::ios::app);
+    if (file.tellp() == 0) { // Check if the file is empty
+        file << "Player 1 (Blue): " << stratChoice << ", Player 2 (Red): " << stratChoice2 << "\n";
+        file << "Move Number,Evaluation\n";
+    }
     if (file.is_open()) {
         file << evaluation << "\n";
         file.close();

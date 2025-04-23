@@ -123,7 +123,8 @@ vector<movement>& Strategy::computeValidMoves(vector<movement>& valid_moves) con
 void Strategy::logToCSV(const std::string& method_name, Sint32 evaluation) {
     std::ofstream file(method_name + ".csv", std::ios::app);
     if (file.is_open()) {
-        file << evaluation << "\n";
+        std::string player_label = (_current_player == 0) ? "Player 1" : "Player 2";
+        file << player_label << ": " << evaluation << "\n";
         file.close();
     }
 }

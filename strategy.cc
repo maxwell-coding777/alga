@@ -169,48 +169,53 @@ void Strategy::gloutonMove() {
 }
 
 Sint32 Strategy::minMaxMove(int niveau, int i) {
-    Sint32 eval;
-    
     // Cas de base: niveau maximum atteint
     if (niveau == NIVMAX) {
         return Strategy::estimateCurrentScore();
     }
-    
+
     std::vector<movement> valid_moves;
     Strategy::computeValidMoves(valid_moves);
-    
+
     // Aucun mouvement valide
     if (valid_moves.empty()) {
         return Strategy::estimateCurrentScore();
     }
 
-    
-    eval = i * INT32_MIN;
+    Sint32 eval;
     movement currBestMove = valid_moves[0]; // Valeur par défaut au cas où
-    if (niveau == 0) _saveBestMove(currBestMove);
-    
-    for (const movement& mov : valid_moves) {
-        // Sauvegarde de l'état
-        bidiarray<Sint16> currState = _blobs;
-        
-        Strategy::applyMove(mov);
-        Sint32 newEval = Strategy::minMaxMove(niveau + 1, -i);
-        
-        // Si on trouve un meilleur coup (i=1 pour max, i=-1 pour min)
-        if (i * newEval > i * eval) {
-            eval = newEval;
-            currBestMove = mov;
+
+    if (i == 1) { // Cas max
+        eval = INT32_MIN;
+        for (const movement& mov : valid_moves) {
+            bidiarray<Sint16> currState = _blobs;
+            Strategy::applyMove(mov);
+            Sint32 newEval = Strategy::minMaxMove(niveau + 1, -1);
+            if (newEval > eval) {
+                eval = newEval;
+                currBestMove = mov;
+            }
+            _blobs = currState;
         }
-        
-        // Restauration de l'état
-        _blobs = currState;
+    } else { // Cas min
+        eval = INT32_MAX;
+        for (const movement& mov : valid_moves) {
+            bidiarray<Sint16> currState = _blobs;
+            Strategy::applyMove(mov);
+            Sint32 newEval = Strategy::minMaxMove(niveau + 1, 1);
+            if (newEval < eval) {
+                eval = newEval;
+                currBestMove = mov;
+            }
+            _blobs = currState;
+        }
     }
-    
+
     // Sauvegarde du meilleur coup si on est à la racine
     if (niveau == 0) {
         _saveBestMove(currBestMove);
     }
-    
+
     return eval;
 }
 

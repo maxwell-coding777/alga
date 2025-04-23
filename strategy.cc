@@ -279,76 +279,53 @@ Sint32 Strategy::minMaxParaMove(int niveau, int i) {
 }
 
 
-Sint32 Strategy::alphaBetaMove(int niveau, int a, int b) {
-    movement bestMove;
+Sint32 Strategy::alphaBetaMove(int niveau, int i, Sint32 alpha, Sint32 beta) {
+    if (niveau == NIVMAX) {
+        return Strategy::estimateCurrentScore() * i;
+    }
+
     std::vector<movement> valid_moves;
     Strategy::computeValidMoves(valid_moves);
-    Sint32 eval;
-
-    // Condition terminale
-    if (niveau == NIVMAX || valid_moves.empty()) {
-        return this->estimateCurrentScore();
+    if (valid_moves.empty()) {
+        return Strategy::estimateCurrentScore() * i;
     }
 
-    // Noeud max
-    if (niveau % 2 == 0) {
-        Sint32 maxEval = INT32_MIN;
+    Sint32 eval = (i == 1) ? INT32_MIN : INT32_MAX;
+    movement bestMove = valid_moves[0];
 
-        for (const movement& mov : valid_moves) {
+    for (const movement& mov : valid_moves) {
+        bidiarray<Sint16> currentState = _blobs;
+        Strategy::applyMove(mov);
+        _current_player = 1 - _current_player;
 
-            bidiarray<Sint16> currState = _blobs;
-            // Strategy temp = *this;
-            applyMove(mov);
-            
-            alphaBetaMove(niveau+1, a, b);
-            
-            eval = estimateCurrentScore();
+        Sint32 score = Strategy::alphaBetaMove(niveau + 1, -i, alpha, beta);
 
-            if (eval > maxEval) {
-                maxEval = eval;
-                bestMove = mov;
-                a = std::max(a, eval);
-            }
+        _current_player = 1 - _current_player;
+        _blobs = currentState;
 
-            _blobs = currState;
-
-            if (b <= a) {
-                break; // Élagage beta
-            }
-
-            if (niveau == 0) {
-                _saveBestMove(bestMove);
-            }
+        if (i * score > i * eval) {
+            eval = score;
+            bestMove = mov;
         }
-        // Noeud min
-    } else {
-        Sint32 minEval = INT32_MAX;
 
-        for (const movement& mov : valid_moves) {
+        if (i == 1) {
+            alpha = std::max(alpha, eval);
+        } else {
+            beta = std::min(beta, eval);
+        }
 
-            bidiarray<Sint16> currState = _blobs;
-            // Strategy temp = *this;
-            applyMove(mov);
-            
-            movement childMove;
-            alphaBetaMove(niveau + 1, a, b);
-            
-            eval = -estimateCurrentScore();
-            if (eval < minEval) {
-                minEval = eval;
-                bestMove = mov;
-                b = std::min(b, eval);
-            }
-
-            _blobs = currState;
-
-            if (b <= a) {
-                break; // Élagage alpha
-            }
+        if (beta <= alpha) {
+            break; // Élagage alpha-bêta
         }
     }
+
+    if (niveau == 0) {
+        _saveBestMove(bestMove);
+    }
+
     return eval;
 }
+
 
 Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
     movement bestMove;

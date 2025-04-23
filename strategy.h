@@ -63,6 +63,10 @@ public:
          */
     Sint32 estimateCurrentScore () const;
 
+
+    void logToCSV(const std::string& method_name, Sint32 evaluation);
+
+
         /**
          * Use the first move available
          */

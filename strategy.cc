@@ -191,6 +191,7 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
             bidiarray<Sint16> currState = _blobs;
             Strategy::applyMove(mov);
             Sint32 newEval = Strategy::minMaxMove(niveau + 1, -1);
+            print("newEval: %d\n", newEval);
             if (newEval > eval) {
                 eval = newEval;
                 currBestMove = mov;
@@ -203,6 +204,7 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
             bidiarray<Sint16> currState = _blobs;
             Strategy::applyMove(mov);
             Sint32 newEval = Strategy::minMaxMove(niveau + 1, 1);
+            print("newEval: %d\n", newEval);
             if (newEval < eval) {
                 eval = newEval;
                 currBestMove = mov;

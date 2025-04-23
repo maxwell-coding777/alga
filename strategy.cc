@@ -167,8 +167,7 @@ void Strategy::gloutonMove() {
     _saveBestMove(bestMove);
     return;
 }
-
-Sint32 Strategy::minMaxMove(int niveau, int i) {
+Sint32 Strategy::minMaxMove(int niveau, int maxPlayer) {
     // Cas de base: niveau maximum atteint
     if (niveau == NIVMAX) {
         return Strategy::estimateCurrentScore();
@@ -185,13 +184,19 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
     Sint32 eval;
     movement currBestMove = valid_moves[0]; // Valeur par défaut au cas où
 
-    if (i == 1) { // Cas max
+    int originalPlayer = _current_player;
+
+    if (_current_player == maxPlayer) { // Cas max
         eval = INT32_MIN;
         for (const movement& mov : valid_moves) {
             bidiarray<Sint16> currState = _blobs;
             Strategy::applyMove(mov);
-            Sint32 newEval = Strategy::minMaxMove(niveau + 1, -1);
-            print("Level %d: Evaluated score = %d, Current player: %d\n", niveau + 1, newEval, i);
+
+            // Changement de joueur
+            _current_player = 1 - _current_player;
+            Sint32 newEval = Strategy::minMaxMove(niveau + 1, maxPlayer);
+            _current_player = originalPlayer;
+
             if (newEval > eval) {
                 eval = newEval;
                 currBestMove = mov;
@@ -203,8 +208,12 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
         for (const movement& mov : valid_moves) {
             bidiarray<Sint16> currState = _blobs;
             Strategy::applyMove(mov);
-            Sint32 newEval = Strategy::minMaxMove(niveau + 1, 1);
-            print("Level %d: Evaluated score = %d, Current player: %d\n", niveau + 1, newEval, i);
+
+            // Changement de joueur
+            _current_player = 1 - _current_player;
+            Sint32 newEval = Strategy::minMaxMove(niveau + 1, maxPlayer);
+            _current_player = originalPlayer;
+
             if (newEval < eval) {
                 eval = newEval;
                 currBestMove = mov;
@@ -634,8 +643,7 @@ void Strategy::strategyMove(int choice) {
         // Stratégie min-max
 		printf("minMaxMove choice : ");
         int evalMax = Strategy::minMaxMove(0, 1);
-        printf("\nevalMax : %d\n for the next %d rounds, currentEval: %d\n", evalMax, NIVMAX, 
-               Strategy::estimateCurrentScore());
+        printf("\nevalMax : %d for the next %d rounds, currentEval: %d\n", evalMax, NIVMAX, Strategy::estimateCurrentScore());
     } else if (choice == 3) {
         // Stratégie min-max parallel
 		printf("minMaxParaMove choice : ");

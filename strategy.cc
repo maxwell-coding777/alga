@@ -631,7 +631,8 @@ void Strategy::strategyMove(int choice) {
     } else if (choice == 2) {
         // Stratégie min-max
 		printf("minMaxMove choice : ");
-        Strategy::minMaxMove(0, 1);
+        int evalMax = Strategy::minMaxMove(0, 1);
+        printf("evalMax : %d\n", evalMax);
     } else if (choice == 3) {
         // Stratégie min-max parallel
 		printf("minMaxParaMove choice : ");

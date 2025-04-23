@@ -1,12 +1,12 @@
 #include "strategy.h"
+#include <fstream>
+#include <string>
 
 // Profondeur de recherche pour minMax / alphaBeta
 const int NIVMAX = 3;
 int stratChoice = 0;
 int stratChoice2 = 0;
 bool twoDiffIA = false;
-
-
 
 void Strategy::applyMove (const movement& mv) {
         // Saut de 1 ou de 2
@@ -120,6 +120,13 @@ vector<movement>& Strategy::computeValidMoves(vector<movement>& valid_moves) con
     return valid_moves;
 }
 
+void Strategy::logToCSV(const std::string& method_name, Sint32 evaluation) {
+    std::ofstream file(method_name + ".csv", std::ios::app);
+    if (file.is_open()) {
+        file << evaluation << "\n";
+        file.close();
+    }
+}
 
 void Strategy::naiveMove() {
 
@@ -141,6 +148,7 @@ void Strategy::naiveMove() {
     
     end_choice:
         _saveBestMove(mv);
+        logToCSV("naiveMove", estimateCurrentScore());
         return;
 }
 
@@ -165,12 +173,15 @@ void Strategy::gloutonMove() {
     }
     
     _saveBestMove(bestMove);
+    logToCSV("gloutonMove", eval);
     return;
 }
 
 Sint32 Strategy::minMaxMove(int niveau, int i) {
     if (niveau == NIVMAX) {
-        return Strategy::estimateCurrentScore() * i;
+        Sint32 score = Strategy::estimateCurrentScore() * i;
+        if (niveau == 0) logToCSV("minMaxMove", score);
+        return score;
     }
     std::vector<movement> valid_moves;
     Strategy::computeValidMoves(valid_moves);
@@ -193,10 +204,10 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
     }
     if (niveau == 0) {
         _saveBestMove(bestMove);
+        logToCSV("minMaxMove", eval);
     }
     return eval;
 }
-
 
 Sint32 Strategy::minMaxParaMove(int niveau, int i) {
     // Essai de parallélisation niveau 0 : un peu guez
@@ -279,7 +290,9 @@ Sint32 Strategy::minMaxParaMove(int niveau, int i) {
 }
 Sint32 Strategy::alphaBetaMove(int niveau, int i, Sint32 alpha, Sint32 beta) {
     if (niveau == NIVMAX) {
-        return Strategy::estimateCurrentScore() * i;
+        Sint32 score = Strategy::estimateCurrentScore() * i;
+        if (niveau == 0) logToCSV("alphaBetaMove", score);
+        return score;
     }
     std::vector<movement> valid_moves;
     Strategy::computeValidMoves(valid_moves);
@@ -310,10 +323,10 @@ Sint32 Strategy::alphaBetaMove(int niveau, int i, Sint32 alpha, Sint32 beta) {
     }
     if (niveau == 0) {
         _saveBestMove(bestMove);
+        logToCSV("alphaBetaMove", eval);
     }
     return eval;
 }
-
 
 Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
     movement bestMove;
@@ -352,6 +365,7 @@ Sint32 Strategy::alphaBetaParaMove(int niveau, int a, int b) {
                 }
             }
         }
+        logToCSV("alphaBetaParaMove", eval);
     }
     // Noeud max
     else if (niveau % 2 == 0) {
@@ -565,6 +579,7 @@ void Strategy::classicMove() {
     }
 
     _saveBestMove(bestMove);
+    logToCSV("classicMove", eval);
 }
 
 void Strategy::strategyMove(int choice) {
@@ -595,5 +610,6 @@ void Strategy::strategyMove(int choice) {
 		printf("naiveMove choice : ");
         Strategy::naiveMove();
     }
+    logToCSV("strategyMove", estimateCurrentScore());
     printf("player %d\n", (int) _current_player);
 }

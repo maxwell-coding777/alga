@@ -86,7 +86,7 @@ public:
         /**
          * Find the best move using an alpha beta algorithm
          */
-    Sint32 alphaBetaMove(int niveau, int a, int b);
+    Sint32 alphaBetaMove(int niveau, int i, int a, int b);
 
 
         /**

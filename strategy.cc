@@ -177,7 +177,6 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
     if (valid_moves.empty()) {
         return Strategy::estimateCurrentScore() * i;
     }
-    int originalPlayer = _current_player;
     Sint32 eval = (i == 1) ? INT32_MIN : INT32_MAX;
     movement bestMove = valid_moves[0];
     for (const movement& mov : valid_moves) {
@@ -185,7 +184,7 @@ Sint32 Strategy::minMaxMove(int niveau, int i) {
         Strategy::applyMove(mov);
         _current_player = 1 - _current_player;
         Sint32 score = Strategy::minMaxMove(niveau + 1, -i);
-        _current_player = originalPlayer;
+        _current_player = 1 - _current_player;
         _blobs = currentState;
         if (i * score > i * eval) {
             eval = score;
@@ -334,7 +333,7 @@ Sint32 Strategy::alphaBetaMove(int niveau, int a, int b) {
             movement childMove;
             alphaBetaMove(niveau + 1, a, b);
             
-            eval = estimateCurrentScore();
+            eval = -estimateCurrentScore();
             if (eval < minEval) {
                 minEval = eval;
                 bestMove = mov;
